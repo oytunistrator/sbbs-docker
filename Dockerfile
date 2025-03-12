@@ -1,7 +1,7 @@
-# Base image olarak Ubuntu kullanıyoruz
+# Ubuntu 20.04 tabanlı image kullanıyoruz
 FROM ubuntu:20.04
 
-# Çevresel değişkenleri ayarlayarak tzdata'nın etkileşimli kısmını atlıyoruz
+# Etkileşimli kurulumları engellemek için noninteractive moda geçiyoruz
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Gerekli bağımlılıkları yükleyelim
@@ -32,28 +32,24 @@ RUN apt-get update && apt-get install -y \
     libnspr4-dev \
     libnss3-dev \
     libcap2-bin \
+    libjson-c-dev \
+    libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Synchronet BBS kaynağını /opt/synchronet altına klonluyoruz
-RUN git clone https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
+# Synchronet kaynak kodunu klonlayalım
+RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
 
-# Synchronet dizinine gidiyoruz
+# Çalışma dizinini değiştirelim
 WORKDIR /opt/synchronet
 
-# Önce eski symlink hatalarını önlemek için exec ve docs dizinlerini temizliyoruz
-RUN rm -rf /opt/synchronet/docs /opt/synchronet/exec
-
-# Kaynak kodlarını derliyoruz
-RUN make -C /opt/synchronet/src/sbbs3
-
-# Binary dosyalarını erişilebilir hale getirmek için exec klasörünü bağlıyoruz
-RUN ln -s /opt/synchronet/repo/exec /opt/synchronet/exec
+# Kaynak kodları derleniyor (Resmi dökümantasyona uygun)
+RUN make install SYMLINK=1
 
 # Konfigürasyon dosyalarını ve gerekli klasörleri ekleyelim
 VOLUME ["/sbbs"]
 
-# Telnet portunu açalım
-EXPOSE 23
+# Telnet portlarını açalım
+EXPOSE 23 513
 
-# Synchronet BBS'yi başlatmak için gerekli komut
-CMD ["/opt/synchronet/exec/sbbs"]
+# Synchronet BBS başlatma komutu
+CMD ["/sbbs/exec/sbbs"]
