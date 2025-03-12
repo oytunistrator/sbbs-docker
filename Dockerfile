@@ -40,8 +40,8 @@ RUN git clone https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
 # Synchronet dizinine gidiyoruz ve doğru make komutunu çalıştırıyoruz
 WORKDIR /opt/synchronet
 
-# /opt/synchronet/docs dizinini silip sembolik bağlantı oluşturalım
-RUN rm -rf /opt/synchronet/docs && \
+# Önce mevcut exec ve docs dizinlerini temizliyoruz
+RUN rm -rf /opt/synchronet/docs /opt/synchronet/exec && \
     make -f install/install-sbbs.mk SYMLINK=1
 
 # Konfigürasyon dosyalarını ve gerekli klasörleri ekleyelim
