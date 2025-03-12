@@ -33,8 +33,6 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-#RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
-
 WORKDIR /opt/synchronet
 
 RUN wget https://gitlab.synchro.net/main/sbbs/-/raw/master/install/install-sbbs.mk
