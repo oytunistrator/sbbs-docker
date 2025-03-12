@@ -57,3 +57,5 @@ This project allows you to quickly set up and run the SBBS (Simple Bulletin Boar
    ```
 
 This should be a clear and concise README for your Telnet-based SBBS application!
+
+SBBS Wiki: https://wiki.synchro.net/
