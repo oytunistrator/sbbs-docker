@@ -44,11 +44,7 @@ WORKDIR /opt/synchronet
 
 RUN cd /opt/synchronet/install \
     && make -f install-sbbs.mk RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
-RUN cd /opt/synchronet/src/sbbs3 \
-    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
-FROM base AS runtime
-COPY --from=build /sbbs /sbbs
 WORKDIR /sbbs
 USER sbbs
 VOLUME ["/sbbs"]
