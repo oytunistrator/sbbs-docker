@@ -1,10 +1,7 @@
-# Ubuntu 20.04 tabanlı image kullanıyoruz
 FROM ubuntu:20.04
 
-# Etkileşimli kurulumları engellemek için noninteractive moda geçiyoruz
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Gerekli bağımlılıkları yükleyelim
 RUN apt-get update && apt-get install -y \
     build-essential \
     autoconf \
@@ -36,20 +33,27 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Synchronet kaynak kodunu klonlayalım
+RUN addgroup --gid 1000 sbbs \
+    && adduser --disabled-password --shell /bin/bash --uid 1000 --gid 1000 --gecos '' sbbs \
+    && adduser sbbs sudo \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
 
-# Çalışma dizinini değiştirelim
 WORKDIR /opt/synchronet
 
-# Kaynak kodları derleniyor (Resmi dökümantasyona uygun)
-RUN make install SYMLINK=1
+RUN cd ./install \
+    && sed -i.bak '/git/d' ./GNUmakefile \
+    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
+RUN cd ./src/sbbs3 \
+    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
-# Konfigürasyon dosyalarını ve gerekli klasörleri ekleyelim
+FROM base AS runtime
+COPY --from=build /sbbs /sbbs
+WORKDIR /sbbs
+USER sbbs
 VOLUME ["/sbbs"]
 
-# Telnet portlarını açalım
 EXPOSE 23 513
 
-# Synchronet BBS başlatma komutu
 CMD ["/sbbs/exec/sbbs"]
