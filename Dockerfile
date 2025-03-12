@@ -33,20 +33,13 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --gid 1000 sbbs \
-    && adduser --disabled-password --shell /bin/bash --uid 1000 --gid 1000 --gecos '' sbbs \
-    && adduser sbbs sudo \
-    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
+#RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
 
 WORKDIR /opt/synchronet
 
-RUN cd /opt/synchronet/install \
-    && make -f install-sbbs.mk RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
+RUN wget https://gitlab.synchro.net/main/sbbs/-/raw/master/install/install-sbbs.mk
+RUN make -f install-sbbs.mk SYMLINK=1 SBBSDIR=/sbbs
 
-WORKDIR /sbbs
-USER sbbs
 VOLUME ["/sbbs"]
 
 EXPOSE 23 513
