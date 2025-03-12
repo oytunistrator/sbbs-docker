@@ -34,15 +34,20 @@ RUN apt-get update && apt-get install -y \
     libcap2-bin \
     && rm -rf /var/lib/apt/lists/*
 
-# Synchronet BBS kaynağını alıyoruz
+# Synchronet BBS kaynağını /opt/synchronet altına klonluyoruz
 RUN git clone https://github.com/SynchronetBBS/sbbs.git /opt/synchronet
 
-# Synchronet dizinine gidiyoruz ve doğru make komutunu çalıştırıyoruz
+# Synchronet dizinine gidiyoruz
 WORKDIR /opt/synchronet
 
-# Önce mevcut exec ve docs dizinlerini temizliyoruz
-RUN rm -rf /opt/synchronet/docs /opt/synchronet/exec && \
-    make -f install/install-sbbs.mk SYMLINK=1
+# Önce eski symlink hatalarını önlemek için exec ve docs dizinlerini temizliyoruz
+RUN rm -rf /opt/synchronet/docs /opt/synchronet/exec
+
+# Kaynak kodlarını derliyoruz
+RUN make -C /opt/synchronet/src/sbbs3
+
+# Binary dosyalarını erişilebilir hale getirmek için exec klasörünü bağlıyoruz
+RUN ln -s /opt/synchronet/repo/exec /opt/synchronet/exec
 
 # Konfigürasyon dosyalarını ve gerekli klasörleri ekleyelim
 VOLUME ["/sbbs"]
@@ -51,4 +56,4 @@ VOLUME ["/sbbs"]
 EXPOSE 23
 
 # Synchronet BBS'yi başlatmak için gerekli komut
-CMD ["/opt/synchronet/sbbs"]
+CMD ["/opt/synchronet/exec/sbbs"]
