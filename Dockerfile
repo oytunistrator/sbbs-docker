@@ -42,10 +42,9 @@ RUN git clone --depth=1 https://github.com/SynchronetBBS/sbbs.git /opt/synchrone
 
 WORKDIR /opt/synchronet
 
-RUN cd ./install \
-    && sed -i.bak '/git/d' ./GNUmakefile \
-    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
-RUN cd ./src/sbbs3 \
+RUN cd /opt/synchronet/install \
+    && make -f install-sbbs.mk RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
+RUN cd /opt/synchronet/src/sbbs3 \
     && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
 FROM base AS runtime
