@@ -60,19 +60,19 @@ services:
       # - 24553:24553 #binkps
       # - 143:143 #imap
       # - 993:993 #imap+tls
-  sbbs_irc:
-     container_name: sbbs_irc
-     build:
-       context: .
-     deploy:
-       restart_policy:
-         condition: any
-         delay: 3s
-     volumes:
-       - ./data:/sbbs-data
-     command: sbbs-run jsexec /sbbs/exec/ircd.js
-     ports:
-       - 6667:6667
+  # sbbs_irc:
+  #   container_name: sbbs_irc
+  #   build:
+  #     context: .
+  #   deploy:
+  #     restart_policy:
+  #       condition: any
+  #       delay: 3s
+  #   volumes:
+  #     - $PWD:/sbbs-data
+  #   command: sbbs-run jsexec /sbbs/exec/ircd.js
+  #   ports:
+  #     - 6667:6667
   # sbbs_ecweb:
   #   container_name: sbbs_ecweb
   #   build:
