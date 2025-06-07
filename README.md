@@ -21,6 +21,7 @@ This project allows you to quickly set up and run the SBBS (Simple Bulletin Boar
    Build the Docker image with the following command:
 
    ```bash
+   cd docker
    docker build . -t sbbs
    ```
 
