@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install required dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     autoconf \
@@ -33,34 +34,24 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Set up working directory and download installation script
 WORKDIR /opt/synchronet
+RUN wget https://gitlab.synchro.net/main/sbbs/-/raw/master/install/install-sbbs.mk
 
-# Download and build Synchronet BBS from source
-RUN echo "Downloading and building Synchronet BBS..." && \
-    git clone https://gitlab.synchro.net/main/sbbs.git . && \
-    ./configure && \
-    make && \
-    make install && \
-    echo "Setting up directories..." && \
-    mkdir -p /sbbs/exec && \
-    cp ./exec/sbbs /sbbs/exec/ && \
-    chmod +x /sbbs/exec/sbbs && \
-    echo "Installation complete. Verifying..." && \
-    ls -l /sbbs/exec/sbbs && \
-    echo "Directory structure:" && \
-    ls -la /sbbs
+# Install Synchronet BBS
+RUN make -f install-sbbs.mk SYMLINK=1 SBBSDIR=/sbbs
 
-# Verify installation with detailed output
-RUN echo "Final verification:" && \
-    ls -la /sbbs/exec && \
-    echo "Executable permissions:" && \
-    stat -c "%a %n" /sbbs/exec/sbbs
+# Set up directory structure
+RUN mkdir -p /sbbs/{exec,etc,mail,msg,sys,bin,doc,help,html,logs,news,tmp,upload,work}
+RUN chmod +x /sbbs/exec/sbbs
+
+# Set permissions
+RUN chown -R root:root /sbbs
+RUN chmod -R 755 /sbbs
 
 VOLUME ["/sbbs"]
 
 EXPOSE 23 513
 
-# Start Synchronet BBS with detailed logging
-CMD echo "Starting Synchronet BBS..." && \
-    cd /sbbs && \
-    ./exec/sbbs -d
+# Start Synchronet BBS
+CMD ["/sbbs/exec/sbbs", "-d"]
