@@ -35,12 +35,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /opt/synchronet
 
-# Download and install Synchronet BBS with detailed logging
-RUN echo "Downloading install script..." && \
-    wget -O install-sbbs.mk https://gitlab.synchro.net/main/sbbs/-/raw/master/install/install-sbbs.mk && \
-    echo "Installing Synchronet BBS..." && \
-    make -f install-sbbs.mk SYMLINK=1 SBBSDIR=/sbbs && \
-    echo "Setting permissions..." && \
+# Download and build Synchronet BBS from source
+RUN echo "Downloading and building Synchronet BBS..." && \
+    git clone https://gitlab.synchro.net/main/sbbs.git . && \
+    ./configure && \
+    make && \
+    make install && \
+    echo "Setting up directories..." && \
+    mkdir -p /sbbs/exec && \
+    cp ./exec/sbbs /sbbs/exec/ && \
     chmod +x /sbbs/exec/sbbs && \
     echo "Installation complete. Verifying..." && \
     ls -l /sbbs/exec/sbbs && \
@@ -58,4 +61,6 @@ VOLUME ["/sbbs"]
 EXPOSE 23 513
 
 # Start Synchronet BBS with detailed logging
-CMD echo "Starting Synchronet BBS..." && /sbbs/exec/sbbs -d
+CMD echo "Starting Synchronet BBS..." && \
+    cd /sbbs && \
+    ./exec/sbbs -d
