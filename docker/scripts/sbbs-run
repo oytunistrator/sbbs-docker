@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Run initialization
+"$(dirname -- "$0")/sbbs-init" || exit $?
+
+"$@" || exit $?

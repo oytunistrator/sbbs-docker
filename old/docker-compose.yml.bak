@@ -1,0 +1,9 @@
+services:
+  bbs:
+    build: .  # Dockerfile'ı bulunduğu dizinden alır ve imajı buradan derler
+    container_name: synchronet-bbs
+    ports:
+      - "2323:23"   # Telnet bağlantısı (host port: 2323, container port: 23)
+    volumes:
+      - ./data:/sbbs  # BBS verilerini saklamak için
+    restart: unless-stopped
